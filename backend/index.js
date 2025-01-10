@@ -9,7 +9,6 @@ import cron from "node-cron";
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 cron.schedule("0 */2 * * *", async () => {
     try {
         await fetchCryptoData();
@@ -52,3 +51,5 @@ const url = process.env.MONGODB_URI;
     throw error;
   }
 })();
+
+
