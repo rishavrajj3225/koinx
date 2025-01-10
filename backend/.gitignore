@@ -120,3 +120,4 @@ dist
 
 # JetBrains IDEs
 .idea/
+.vercel
