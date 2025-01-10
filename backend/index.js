@@ -18,6 +18,11 @@ cron.schedule("0 */2 * * *", async () => {
         console.error("Error fetching crypto data: ", error);
     }
 });
+import devationRoute from "./route/devation.route.js";
+app.use("/api", devationRoute);
+import stat from "./route/stat.route.js";
+app.use("/api", stat);
+
 app.get("/fetch", async (req, res) => {
   try {
     const data = await fetchCryptoData();
