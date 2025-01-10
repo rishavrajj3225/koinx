@@ -1,12 +1,14 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
+import cros from "cros";
 import mongoose from "mongoose";
 import {fetchCryptoData } from "./controllers/fetchdata.controller.js";
 import cron from "node-cron";
 
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 cron.schedule("0 */2 * * *", async () => {
