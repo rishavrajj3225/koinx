@@ -1,48 +1,56 @@
 import axios from "axios";
-import { Currency } from "../models/currency.model";
+import { Currency } from "../models/currency.model.js";
+
+const options = {
+  method: "GET",
+  url: "https://api.coingecko.com/api/v3/simple/price",
+  params: {
+    ids: "bitcoin,ethereum,matic-network",
+    vs_currencies: "usd",
+    include_market_cap: true,
+    include_24hr_change: true,
+    include_last_updated_at: true,
+  },
+  headers: {
+    accept: "application/json",
+    "x-cg-demo-api-key": process.env.API_SECRET_KEY,
+  },
+};
+
 const fetchCryptoData = async () => {
   try {
-    const url = "";
-    const params = {
-      ids: "bitcoin,ethereum,matic-network",
-      vs_currencies: "usd",
-      include_market_cap: true,
-      include_24hr_change: true,
-    };
-
-    const response = await axios.get(url, { params });
+    const response = await axios.request(options);
     const data = response.data;
 
     const coins = [
       {
-        coin_name: "Bitcoin",
+        currency: "Bitcoin",
         price_usd: data.bitcoin.usd,
-        market_cap_usd: data.bitcoin.usd_market_cap,
+        market_cap: data.bitcoin.usd_market_cap,
         change_24h: data.bitcoin.usd_24h_change,
       },
       {
-        coin_name: "Ethereum",
+        currency: "Ethereum",
         price_usd: data.ethereum.usd,
-        market_cap_usd: data.ethereum.usd_market_cap,
+        market_cap: data.ethereum.usd_market_cap,
         change_24h: data.ethereum.usd_24h_change,
       },
       {
-        coin_name: "Matic",
+        currency: "Matic",
         price_usd: data["matic-network"].usd,
-        market_cap_usd: data["matic-network"].usd_market_cap,
+        market_cap: data["matic-network"].usd_market_cap,
         change_24h: data["matic-network"].usd_24h_change,
       },
     ];
 
     for (const coin of coins) {
-      const newRecord = new Crypto(coin);
+      const newRecord = new Currency(coin);
       await newRecord.save();
     }
-
     console.log("Cryptocurrency data saved successfully.");
   } catch (error) {
-    console.error("Error fetching cryptocurrency data:", error.message);
+    console.error("Error fetching cryptocurrency data:", error);
   }
 };
 
-module.exports = fetchCryptoData;
+export { fetchCryptoData };

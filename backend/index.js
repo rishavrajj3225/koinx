@@ -2,24 +2,45 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import mongoose from "mongoose";
+import {fetchCryptoData } from "./controllers/fetchdata.controller.js";
+import cron from "node-cron";
+
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
+cron.schedule("0 */2 * * *", async () => {
+    try {
+        await fetchCryptoData();
+        console.log("Crypto data fetched successfully");
+    } catch (error) {
+        console.error("Error fetching crypto data: ", error);
+    }
+});
+app.get("/fetch", async (req, res) => {
+  try {
+    const data = await fetchCryptoData();
+    res.json(data);
+  } catch (error) {
+    res.status(500).send("Error fetching crypto data");
+  }
 });
 
+app.get("/", (_, res) => {
+  res.send("Hello World");
+});
+const port=process.env.PORT||3000;
+const url = process.env.MONGODB_URI;
 (async () => {
   try {
-    await mongoose.connect(`${process.env.MONGODB_URI}`);
-    console.log("Database connection successful!");
+    await mongoose.connect(url);
     app.on("error", (error) => {
       console.log("Error", error);
       throw error;
     });
-    app.listen(process.env.PORT, () => {
-      console.log(`app is running on port ${process.env.PORT}`);
+    app.listen(port, () => {
+      console.log(`app is running on port ${port}`);
     });
   } catch (error) {
     console.error("ERROR : ", error);
