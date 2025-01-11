@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
-import cros from "cros";
+import cors from "cors";
 import mongoose from "mongoose";
 import {fetchCryptoData } from "./controllers/fetchdata.controller.js";
 import cron from "node-cron";
@@ -19,6 +19,7 @@ cron.schedule("0 */2 * * *", async () => {
         console.error("Error fetching crypto data: ", error);
     }
 });
+
 import devationRoute from "./route/devation.route.js";
 app.use("/api", devationRoute);
 import stat from "./route/stat.route.js";
@@ -34,7 +35,7 @@ app.get("/fetch", async (req, res) => {
 });
 
 app.get("/", (_, res) => {
-  res.send("Hello World");
+  res.send("This is my assignment , please go to   /api/devation/coin  or /api/stat/coin to get info  here replace coin with the coin name");
 });
 const port=process.env.PORT||3000;
 const url = process.env.MONGODB_URI;
