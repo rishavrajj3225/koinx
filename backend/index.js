@@ -35,7 +35,7 @@ app.get("/fetch", async (req, res) => {
 });
 
 app.get("/", (_, res) => {
-  res.send("This is my assignment , please go to   /api/devation/coin  or /api/stat/coin to get info  here replace coin with the coin name");
+  res.send("This is my assignment , please go to   /api/devation/coin  or /api/stats/coin to get info  here replace coin with the coin name");
 });
 const port=process.env.PORT||3000;
 const url = process.env.MONGODB_URI;

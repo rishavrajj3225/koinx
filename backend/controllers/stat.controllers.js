@@ -23,6 +23,7 @@ const getCryptoData = async (req, res) => {
         const response = await axios.request(options);
         const data = response.data[lowerCaseCoin];
         const formattedData = {
+            coin: lowerCaseCoin,
             price: data.usd,
             marketCap: data.usd_market_cap,
             "24hChange": data.usd_24h_change,

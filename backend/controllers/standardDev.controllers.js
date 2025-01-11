@@ -4,7 +4,8 @@ const getStandardDeviation = async (req, res) => {
     
     try {
         const { coinId } = req.params;
-        console.log(coinId);
+        
+        // console.log(coinId);
         const currencies = await Currency.find({ currency: coinId })
             .sort({ createdAt: -1 })
             .limit(100)
