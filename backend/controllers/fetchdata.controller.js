@@ -17,40 +17,56 @@ const options = {
   },
 };
 
-const fetchCryptoData = async () => {
+const fetchAndSaveCryptoData = async () => {
+  const response = await axios.request(options);
+  const data = response.data;
+
+  const coins = [
+    {
+      currency: "Bitcoin",
+      price_usd: data.bitcoin.usd,
+      market_cap: data.bitcoin.usd_market_cap,
+      change_24h: data.bitcoin.usd_24h_change,
+    },
+    {
+      currency: "Ethereum",
+      price_usd: data.ethereum.usd,
+      market_cap: data.ethereum.usd_market_cap,
+      change_24h: data.ethereum.usd_24h_change,
+    },
+    {
+      currency: "Matic",
+      price_usd: data["matic-network"].usd,
+      market_cap: data["matic-network"].usd_market_cap,
+      change_24h: data["matic-network"].usd_24h_change,
+    },
+  ];
+
+  for (const coin of coins) {
+    const newRecord = new Currency(coin);
+    await newRecord.save();
+  }
+
+  console.log("Cryptocurrency data saved successfully.");
+  return coins; // Return data for confirmation if needed
+};
+
+const fetchCryptoData = async (req, res) => {
   try {
-    const response = await axios.request(options);
-    const data = response.data;
-
-    const coins = [
-      {
-        currency: "Bitcoin",
-        price_usd: data.bitcoin.usd,
-        market_cap: data.bitcoin.usd_market_cap,
-        change_24h: data.bitcoin.usd_24h_change,
-      },
-      {
-        currency: "Ethereum",
-        price_usd: data.ethereum.usd,
-        market_cap: data.ethereum.usd_market_cap,
-        change_24h: data.ethereum.usd_24h_change,
-      },
-      {
-        currency: "Matic",
-        price_usd: data["matic-network"].usd,
-        market_cap: data["matic-network"].usd_market_cap,
-        change_24h: data["matic-network"].usd_24h_change,
-      },
-    ];
-
-    for (const coin of coins) {
-      const newRecord = new Currency(coin);
-      await newRecord.save();
-    }
-    console.log("Cryptocurrency data saved successfully.");
+    const result = await fetchAndSaveCryptoData();
+    return res.json({
+      message: "Cryptocurrency data saved successfully.",
+      data: result,
+    });
   } catch (error) {
-    console.error("Error fetching cryptocurrency data:", error);
+    console.error("Error fetching cryptocurrency data:", error.message);
+    return res
+      .status(500)
+      .json({
+        message: "Error fetching cryptocurrency data.",
+        error: error.message,
+      });
   }
 };
 
-export { fetchCryptoData };
+export { fetchCryptoData, fetchAndSaveCryptoData };

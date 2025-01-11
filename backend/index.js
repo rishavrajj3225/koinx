@@ -3,7 +3,10 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import {fetchCryptoData } from "./controllers/fetchdata.controller.js";
+import {
+  fetchCryptoData,
+  fetchAndSaveCryptoData,
+} from "./controllers/fetchdata.controller.js";
 import cron from "node-cron";
 
 
@@ -12,27 +15,27 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 cron.schedule("0 */2 * * *", async () => {
-    try {
-        await fetchCryptoData();
-        console.log("Crypto data fetched successfully");
-    } catch (error) {
-        console.error("Error fetching crypto data: ", error);
-    }
+  try {
+    await fetchAndSaveCryptoData();
+    console.log("Crypto data fetched successfully via cron job.");
+  } catch (error) {
+    console.error("Error fetching crypto data via cron job: ", error.message);
+  }
+});
+
+
+app.get("/fetch", async (req, res) => {
+  try {
+    await fetchCryptoData(req, res);
+  } catch (error) {
+    res.status(500).send("Error fetching crypto data");
+  }
 });
 
 import devationRoute from "./route/devation.route.js";
 app.use("/api", devationRoute);
 import stat from "./route/stat.route.js";
 app.use("/api", stat);
-
-app.get("/fetch", async (req, res) => {
-  try {
-    const data = await fetchCryptoData();
-    res.json(data);
-  } catch (error) {
-    res.status(500).send("Error fetching crypto data");
-  }
-});
 
 app.get("/", (_, res) => {
   res.send("This is my assignment , please go to   /api/devation/coin  or /api/stats/coin to get info  here replace coin with the coin name");
